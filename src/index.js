@@ -2,6 +2,8 @@ import './css/styles.css'
 import axios from 'axios';
 import Notiflix from 'notiflix';
 import {ApiPixabay} from './js/searchImages';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 const refs = {
     form: document.querySelector('.search-form'),
@@ -57,9 +59,9 @@ function renderMarkup(images) {
         clearMarkup();
         return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
     } else {
-        markup = images.map(({webformatURL, tags, likes, views, comments, downloads}) => {return `
+        markup = images.map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads}) => {return `
         <div class="photo-card">
-        <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+        <a href="${largeImageURL}"><img src="${webformatURL}" alt="${tags}" loading="lazy" /></a>
         <div class="info">
           <p class="info-item">
             <b><span>Likes</span></br>${likes}</b>
@@ -76,6 +78,7 @@ function renderMarkup(images) {
         </div>
       </div>`}).join('');
       refs.gallery.insertAdjacentHTML('beforeend', markup);
+      gallery.refresh();
 
       if (apiPixabay.page === Math.ceil(apiPixabay.totalHits/40)) {
         Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
@@ -99,3 +102,8 @@ function renderMarkup(images) {
             refs.loadMoreBtn.classList.add('disabled');
         }
     }
+
+    let gallery = new SimpleLightbox('.gallery a');
+    gallery.on('show.simplelightbox', function () {
+        // do something…
+    });
